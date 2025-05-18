@@ -1,0 +1,39 @@
+import { 
+  collection, 
+  addDoc, 
+  updateDoc, 
+  deleteDoc, 
+  doc, 
+  onSnapshot,
+  query,
+  where
+} from 'firebase/firestore';
+import { db } from './firebase';
+
+export const subscribeToNotes = (userId, callback) => {
+  const notesRef = collection(db, 'notes');
+  const q = query(notesRef, where('userId', '==', userId));
+  
+  return onSnapshot(q, (snapshot) => {
+    const notes = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    callback(notes);
+  });
+};
+
+export const addNote = async (note) => {
+  const notesRef = collection(db, 'notes');
+  return await addDoc(notesRef, note);
+};
+
+export const updateNote = async (id, updates) => {
+  const noteRef = doc(db, 'notes', id);
+  return await updateDoc(noteRef, updates);
+};
+
+export const deleteNote = async (id) => {
+  const noteRef = doc(db, 'notes', id);
+  return await deleteDoc(noteRef);
+};
