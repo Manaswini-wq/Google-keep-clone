@@ -1,0 +1,63 @@
+import React, { useState } from 'react';
+import { updateNote, deleteNote } from '../../services/notesService';
+import './Note.css';
+
+const Note = ({ note }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [noteContent, setNoteContent] = useState(note.content);
+  const [noteTitle, setNoteTitle] = useState(note.title || '');
+
+  const handleUpdate = async () => {
+    await updateNote(note.id, {
+      title: noteTitle,
+      content: noteContent,
+      updatedAt: new Date().toISOString()
+    });
+    setIsEditing(false);
+  };
+
+  const handleDelete = async () => {
+    await deleteNote(note.id);
+  };
+
+  return (
+    <div className="note" style={{ backgroundColor: note.color || '#fff' }}>
+      {isEditing ? (
+        <input
+          type="text"
+          value={noteTitle}
+          onChange={(e) => setNoteTitle(e.target.value)}
+          placeholder="Title"
+        />
+      ) : (
+        noteTitle && <h3>{noteTitle}</h3>
+      )}
+      
+      {isEditing ? (
+        <textarea
+          value={noteContent}
+          onChange={(e) => setNoteContent(e.target.value)}
+          placeholder="Take a note..."
+        />
+      ) : (
+        <p>{noteContent}</p>
+      )}
+      
+      <div className="note-actions">
+        {isEditing ? (
+          <>
+            <button onClick={handleUpdate}>Save</button>
+            <button onClick={() => setIsEditing(false)}>Cancel</button>
+          </>
+        ) : (
+          <>
+            <button onClick={() => setIsEditing(true)}>Edit</button>
+            <button onClick={handleDelete}>Delete</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Note;
