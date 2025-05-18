@@ -1,0 +1,22 @@
+import { useState, useEffect } from 'react';
+import { subscribeToNotes } from '../services/notesService';
+import { getAuth } from 'firebase/auth';
+
+export const useNotes = () => {
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const auth = getAuth();
+
+  useEffect(() => {
+    if (!auth.currentUser) return;
+
+    const unsubscribe = subscribeToNotes(auth.currentUser.uid, (fetchedNotes) => {
+      setNotes(fetchedNotes);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [auth.currentUser]);
+
+  return { notes, loading };
+};
