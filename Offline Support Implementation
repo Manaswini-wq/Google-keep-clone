@@ -1,0 +1,28 @@
+export const setupOfflineSupport = () => {
+  // Check if browser supports service workers
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(registration => {
+          console.log('ServiceWorker registration successful');
+        })
+        .catch(err => {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+    });
+  }
+
+  // Listen for online/offline status
+  window.addEventListener('online', handleOnline);
+  window.addEventListener('offline', handleOffline);
+};
+
+const handleOnline = () => {
+  // Sync local changes with Firestore when coming back online
+  console.log('Application is online');
+  // Implement your sync logic here
+};
+
+const handleOffline = () => {
+  console.log('Application is offline');
+};
